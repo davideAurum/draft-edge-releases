@@ -1,0 +1,45 @@
+Draft Edge license
+
+Copyright (c) 2026 davideAurum. All rights reserved.
+
+This license covers Draft Edge, including pre-release ("alpha") builds, with
+its README and changelog (together, the "Software"). It does not cover the
+third-party material listed in THIRD-PARTY-NOTICES.txt, which keeps its own
+licenses.
+
+1. Permission. Anyone may download, install, and use the Software free of
+   charge, for personal use and for work, on any number of computers.
+
+2. Sharing. You may share the Software only as the unmodified files davideAurum
+   published, such as the setup or a zip file, or by sharing a link
+   to https://github.com/davideAurum/draft-edge-releases. You may not charge
+   for the Software itself.
+
+3. Limits. You may not:
+   - modify the Software or make works based on it, except where the law
+     allows this despite this limit; or
+   - remove or change its copyright or license notices.
+
+4. Not affiliated. Draft Edge is an independent tool. It is not affiliated
+   with, endorsed by, or sponsored by Sleeper, CBS Sports, the National
+   Football League, or any other league, platform, or data provider. Those
+   names are used only to say what the Software reads. You are responsible for
+   using the Software within the terms of any service whose data you bring
+   into it.
+
+5. Feedback. If you send feedback, such as problem reports or suggestions,
+   davideAurum may use it to improve Draft Edge, with no obligation to you.
+
+6. No warranty. The Software may contain defects that lose or damage data;
+   alpha builds are unfinished. It is provided "as is", without warranty of
+   any kind, express or implied, including warranties of merchantability,
+   fitness for a particular purpose, and non-infringement. Keep backups of
+   anything important, including your draft store.
+
+7. Limitation of liability. To the extent the law allows, davideAurum is
+   not liable for any damages arising from the Software or its use, including
+   loss of data, even if told such damages were possible.
+
+8. Other rights. All rights not expressly granted here are reserved. The
+   league data, notes, and preferences you keep with the Software remain
+   yours.
