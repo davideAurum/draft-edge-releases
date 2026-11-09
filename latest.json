@@ -1,0 +1,31 @@
+{
+  "format": "draftEdge.update-feed",
+  "version": 1,
+  "product": "Draft Edge",
+  "release": {
+    "version": "0.1.0-alpha.1",
+    "notesUrl": "https://github.com/davideAurum/draft-edge-releases/releases/tag/v0.1.0-alpha.1",
+    "setup": {
+      "file": "DraftEdge-0.1.0-alpha.1-setup.exe",
+      "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/v0.1.0-alpha.1/DraftEdge-0.1.0-alpha.1-setup.exe",
+      "bytes": 45044865,
+      "sha256": "5951f502493fcde0a6ebc979ea792f37738a12bb75451a0e68094e7c23d8a177"
+    },
+    "packages": [
+      {
+        "kind": "framework-dependent",
+        "file": "DraftEdge-0.1.0-alpha.1-win-x64-framework-dependent.zip",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/v0.1.0-alpha.1/DraftEdge-0.1.0-alpha.1-win-x64-framework-dependent.zip",
+        "bytes": 1802069,
+        "sha256": "9ad734673ab5247d01c1fe4acc396eb0f67cab5ddf9265e5ca14a2b849d2a306"
+      },
+      {
+        "kind": "self-contained",
+        "file": "DraftEdge-0.1.0-alpha.1-win-x64-self-contained.zip",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/v0.1.0-alpha.1/DraftEdge-0.1.0-alpha.1-win-x64-self-contained.zip",
+        "bytes": 59348504,
+        "sha256": "259a50d5d68bb8d5d7e14d41a5f2882e8b41deba2d06226aa4eb82596def97f7"
+      }
+    ]
+  }
+}
