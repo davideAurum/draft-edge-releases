@@ -1,0 +1,3 @@
+# Release files and latest.json are stored exactly as uploaded: no line-ending conversion,
+# so latest.json keeps matching the hashes it was written with.
+* -text
