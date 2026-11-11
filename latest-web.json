@@ -1,0 +1,26 @@
+{
+  "format": "draftEdge.web-update-feed",
+  "version": 1,
+  "product": "Draft Edge",
+  "release": {
+    "version": "1.4.0",
+    "tag": "web-v1.4.0",
+    "notesUrl": "https://github.com/davideAurum/draft-edge-releases/releases/tag/web-v1.4.0",
+    "packages": [
+      {
+        "kind": "app",
+        "file": "DraftEdge-1.4.0.zip",
+        "bytes": 2843902,
+        "sha256": "1bf6bda9634a74ad3d4eba5531d69196997f07f2120689ab2ef74b9954915c4a",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.0/DraftEdge-1.4.0.zip"
+      },
+      {
+        "kind": "portable",
+        "file": "DraftEdge-1.4.0-portable-win-x64.zip",
+        "bytes": 13938912,
+        "sha256": "b56b19cc4d4446e0a736ec4063fc851cd031dee3aeea85ba113dc5609bd35988",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.0/DraftEdge-1.4.0-portable-win-x64.zip"
+      }
+    ]
+  }
+}
