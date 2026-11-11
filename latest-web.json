@@ -3,23 +3,23 @@
   "version": 1,
   "product": "Draft Edge",
   "release": {
-    "version": "1.4.0",
-    "tag": "web-v1.4.0",
-    "notesUrl": "https://github.com/davideAurum/draft-edge-releases/releases/tag/web-v1.4.0",
+    "version": "1.4.1",
+    "tag": "web-v1.4.1",
+    "notesUrl": "https://github.com/davideAurum/draft-edge-releases/releases/tag/web-v1.4.1",
     "packages": [
       {
         "kind": "app",
-        "file": "DraftEdge-1.4.0.zip",
-        "bytes": 2843902,
-        "sha256": "1bf6bda9634a74ad3d4eba5531d69196997f07f2120689ab2ef74b9954915c4a",
-        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.0/DraftEdge-1.4.0.zip"
+        "file": "DraftEdge-1.4.1.zip",
+        "bytes": 2847839,
+        "sha256": "aeb2c6d127d4693cde11c7fc071d2eac013d83d4dd3ceb439eb05b88ac2be4e2",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.1/DraftEdge-1.4.1.zip"
       },
       {
         "kind": "portable",
-        "file": "DraftEdge-1.4.0-portable-win-x64.zip",
-        "bytes": 13938912,
-        "sha256": "b56b19cc4d4446e0a736ec4063fc851cd031dee3aeea85ba113dc5609bd35988",
-        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.0/DraftEdge-1.4.0-portable-win-x64.zip"
+        "file": "DraftEdge-1.4.1-portable-win-x64.zip",
+        "bytes": 13942847,
+        "sha256": "4411a54a276c8d475cf379118f6b50ff5f410fa64690308a4bf502dbe20128a4",
+        "url": "https://github.com/davideAurum/draft-edge-releases/releases/download/web-v1.4.1/DraftEdge-1.4.1-portable-win-x64.zip"
       }
     ]
   }
