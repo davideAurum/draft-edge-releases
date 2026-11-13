@@ -37,10 +37,43 @@ param(
   only when their size and SHA-256 match the release feed.
 #>
 
+# The same two display modes as scripts/DraftEdgeTerm.ps1 (this file is run straight from the web, so
+# it cannot load that one): colour and glyphs on an interactive terminal; stable timestamped ASCII
+# lines when output is redirected, NO_COLOR or CI is set, TERM=dumb, or DRAFTEDGE_PLAIN is set.
+$script:DeRich = ((-not [Console]::IsOutputRedirected) -and (-not $env:NO_COLOR) -and (-not $env:CI) -and (-not $env:DRAFTEDGE_PLAIN) -and ($env:TERM -ne 'dumb') -and (($PSVersionTable.PSVersion.Major -ge 6) -or $env:WT_SESSION -or $env:ANSICON))
+$script:DeUnicode = $script:DeRich -and (-not $env:DRAFTEDGE_ASCII)
+$script:DeStarted = [DateTime]::UtcNow
+
+function Write-DeSay {
+  # Kind: ok, info, warn, next. Warnings go to stderr.
+  param([string]$Kind, [string]$Text)
+  $esc = [char]27
+  if (-not $script:DeRich) {
+    $level = switch ($Kind) { 'ok' { 'OK' } 'warn' { 'WARN' } 'next' { 'NEXT' } default { 'INFO' } }
+    $line = ('{0} {1,-4} {2}' -f (Get-Date).ToString('yyyy-MM-dd HH:mm:ss'), $level, $Text)
+    if ($Kind -eq 'warn') { [Console]::Error.WriteLine($line) } else { [Console]::Out.WriteLine($line) }
+    return
+  }
+  $glyphs = if ($script:DeUnicode) { @{ ok = [string][char]0x2714; warn = [string][char]0x25B2; info = [string][char]0x2022; next = [string][char]0x2192 } } else { @{ ok = 'OK'; warn = '!!'; info = '*'; next = '->' } }
+  $color = switch ($Kind) { 'ok' { '32' } 'warn' { '33' } default { '36' } }
+  $label = if ($Kind -eq 'next') { "$esc[1;36m$($glyphs[$Kind]) Next$esc[0m  $Text" } elseif ($Kind -eq 'warn') { "$esc[${color}m$($glyphs[$Kind]) $Text$esc[0m" } else { "$esc[${color}m$($glyphs[$Kind])$esc[0m $Text" }
+  if ($Kind -eq 'warn') { [Console]::Error.WriteLine($label) } else { [Console]::Out.WriteLine($label) }
+}
+
+function Format-DeSeconds {
+  param([double]$Seconds)
+  $whole = [int][math]::Round($Seconds, 0, [MidpointRounding]::AwayFromZero)
+  if ($Seconds -lt 10) { return ('{0:0.0}s' -f $Seconds) }
+  if ($whole -lt 60) { return "${whole}s" }
+  return ('{0}m {1:00}s' -f [math]::Floor($whole / 60), ($whole % 60))
+}
+
 function Install-DraftEdge {
   param([string]$Mode, [string]$Dir, [string]$Ref, [string]$Repo, [string]$Feed, [switch]$NoPath)
 
   $ErrorActionPreference = 'Stop'
+  # PowerShell 5.1 draws its own, very slow, progress bar over downloads; the steps below say what is happening.
+  $ProgressPreference = 'SilentlyContinue'
   try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
 
   if (-not $env:LOCALAPPDATA) { throw 'Draft Edge installs on Windows only (LOCALAPPDATA is not set).' }
@@ -60,13 +93,13 @@ function Install-DraftEdge {
       $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
       if (($userPath -split ';') -notcontains $binDir) {
         [Environment]::SetEnvironmentVariable('Path', (@($userPath, $binDir) | Where-Object { $_ }) -join ';', 'User')
-        Write-Host "Added $binDir to your user PATH"
+        Write-DeSay info "Added $binDir to your user PATH"
       }
       if (($env:Path -split ';') -notcontains $binDir) { $env:Path = "$env:Path;$binDir" }
 
       $found = (Get-Command draftedge -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1).Source
       if ($found -and $found -ne $shim) {
-        Write-Warning "'draftedge' resolves to $found first. Remove it, or run $shim directly."
+        Write-DeSay warn "'draftedge' resolves to $found first. Remove it, or run $shim directly."
       }
     }
   }
@@ -74,12 +107,12 @@ function Install-DraftEdge {
   $version = ''
   $versionMatch = Select-String -Path (Join-Path $Dir 'app-version.js') -Pattern 'version: "([^"]+)"' | Select-Object -First 1
   if ($versionMatch) { $version = " $($versionMatch.Matches[0].Groups[1].Value)" }
-  Write-Host ""
-  Write-Host "Draft Edge$version is installed in $Dir"
+  $took = Format-DeSeconds (([DateTime]::UtcNow - $script:DeStarted).TotalSeconds)
+  Write-DeSay ok "Draft Edge$version is installed in $Dir ($took)"
   if ($Mode -eq 'portable') {
-    Write-Host "Start it with: $(Join-Path $Dir 'draftedge.cmd')      (double-click works; move or copy the folder whenever you like)"
+    Write-DeSay next "Start it with: $(Join-Path $Dir 'draftedge.cmd')      (double-click works; move or copy the folder whenever you like)"
   } else {
-    Write-Host "Start it with: draftedge      (draftedge -Help for the rest)"
+    Write-DeSay next "Start it with: draftedge      (draftedge -Help for the rest)"
   }
 }
 
@@ -102,7 +135,7 @@ function Install-FromGit {
     if (Invoke-Git -C $Dir status --porcelain) {
       throw "$Dir has local changes. Commit or discard them, then run the installer again; it leaves a changed checkout alone."
     }
-    Write-Host "Updating $Dir to $Ref"
+    Write-DeSay info "Updating $Dir to $Ref"
     Invoke-Git -C $Dir fetch --quiet --tags --prune origin
     Invoke-Git -C $Dir checkout --quiet $Ref
     & git -C $Dir show-ref --verify --quiet "refs/remotes/origin/$Ref"
@@ -110,7 +143,7 @@ function Install-FromGit {
   } elseif ((Test-Path $Dir) -and (Get-ChildItem -Force $Dir | Select-Object -First 1)) {
     throw "$Dir exists and is not a Draft Edge checkout. Pass -Dir with an empty or new folder."
   } else {
-    Write-Host "Cloning $Repo ($Ref) into $Dir"
+    Write-DeSay info "Cloning $Repo ($Ref) into $Dir"
     Invoke-Git clone --quiet --branch $Ref $Repo $Dir
   }
 }
@@ -142,7 +175,7 @@ function Install-FromRelease {
   }
   if ($kind -eq 'app') { Assert-Python3 }
 
-  Write-Host "Reading the release feed"
+  Write-DeSay info "Reading the release feed"
   $feedData = Invoke-RestMethod -Uri $Feed -UseBasicParsing
   if ($feedData.format -ne 'draftEdge.web-update-feed' -or $feedData.version -ne 1) { throw 'The release feed is not in a format this installer understands.' }
   $release = $feedData.release
@@ -156,8 +189,10 @@ function Install-FromRelease {
   $null = New-Item -ItemType Directory -Force -Path $work
   try {
     $archive = Join-Path $work $package.file
-    Write-Host "Downloading Draft Edge $($release.version) ($kind, $([math]::Round($package.bytes / 1MB, 1)) MB)"
+    Write-DeSay info "Downloading Draft Edge $($release.version) ($kind, $([math]::Round($package.bytes / 1MB, 1)) MB)"
+    $downloadStarted = [DateTime]::UtcNow
     Invoke-WebRequest -Uri $package.url -OutFile $archive -UseBasicParsing
+    Write-DeSay ok "Downloaded in $(Format-DeSeconds (([DateTime]::UtcNow - $downloadStarted).TotalSeconds))"
     $actual = (Get-FileHash -Algorithm SHA256 -Path $archive).Hash.ToLowerInvariant()
     if ((Get-Item $archive).Length -ne [int64]$package.bytes -or $actual -ne ([string]$package.sha256).ToLowerInvariant()) {
       throw "$($package.file) does not match the size and SHA-256 in the release feed; nothing was installed."
@@ -173,9 +208,10 @@ function Install-FromRelease {
     $result = & $python (Join-Path $staging 'scripts\release_update.py') apply --staging $staging --target $Dir
     if ($LASTEXITCODE -ne 0) { throw "Installing into $Dir failed; run the installer again." }
     $summary = $result | ConvertFrom-Json
-    Write-Host "Installed $($summary.version): $($summary.copied) file(s) written, $($summary.removed) removed"
+    $copied = [int]$summary.copied
+    Write-DeSay ok "Installed $($summary.version): $copied $(if ($copied -eq 1) { 'file' } else { 'files' }) written, $([int]$summary.removed) removed"
   } finally {
-    if (Test-Path $work) { try { [IO.Directory]::Delete($work, $true) } catch { Write-Warning "Could not remove the temporary folder $work." } }
+    if (Test-Path $work) { try { [IO.Directory]::Delete($work, $true) } catch { Write-DeSay warn "Could not remove the temporary folder $work." } }
   }
 }
 
